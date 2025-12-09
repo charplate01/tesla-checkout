@@ -1,199 +1,191 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tesla Checkout</title>
+  <meta charset="UTF-8">
+  <title>$TSLA Top Shareholders</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Global styles */
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
 
-    <script src="https://js.stripe.com/v3/"></script>
+    .checkout-container {
+      max-width: 480px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+      padding: 40px;
+      margin-top: 50px;
+      text-align: center;
+    }
 
-    <style>
-        body {
-            background: #f5f5f7;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            padding: 40px 0;
-        }
+    .checkout-container h1 {
+      font-weight: bold;
+      font-size: 1.8em;
+      margin-bottom: 10px;
+    }
 
-        .checkout-box {
-            width: 420px;
-            background: #ffffff;
-            border-radius: 18px;
-            padding: 35px;
-            box-shadow: 0 10px 28px rgba(0,0,0,0.12);
-            text-align: center;
-        }
+    .checkout-container p.subheader {
+      font-weight: normal;
+      font-size: 1em;
+      line-height: 1.5;
+      margin-bottom: 30px;
+    }
 
-        .tesla-img {
-            width: 160px;
-            margin-bottom: 25px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
+    .checkout-container img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
 
-        .title {
-            font-size: 22px;
-            font-weight: 700;
-            text-align: center;
-            margin-bottom: 12px;
-        }
+    .price {
+      font-size: 1.5em;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
 
-        .subtitle {
-            font-size: 15px;
-            margin-bottom: 22px;
-            color: #555;
-            line-height: 1.5;
-            padding: 0 10px;
-        }
+    #card-element {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
 
-        .badge {
-            display: inline-block;
-            background: #e7f3ff;
-            color: #005bbb;
-            font-size: 12px;
-            padding: 7px 14px;
-            border-radius: 6px;
-            margin-bottom: 24px;
-            font-weight: 600;
-        }
+    #wallet-button {
+      margin-bottom: 20px;
+    }
 
-        .price-box {
-            background: #fafafa;
-            border-radius: 14px;
-            padding: 20px;
-            margin-bottom: 30px;
-            font-size: 24px;
-            font-weight: 700;
-        }
+    #submit-button {
+      width: 100%;
+      padding: 15px;
+      background-color: #e82127;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+    }
 
-        #payment-request-button {
-            margin-bottom: 25px;
-        }
-
-        #payment-element {
-            margin-top: 10px;
-            margin-bottom: 28px;
-            text-align: left;
-        }
-
-        button {
-            width: 100%;
-            background: black;
-            color: white;
-            padding: 16px;
-            font-size: 17px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: 0.2s;
-        }
-
-        button:hover {
-            background: #333;
-        }
-    </style>
+    /* Boosted spacing & alignment */
+    form > div, form > button {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
-
 <body>
-    <div class="checkout-box">
 
-        <!-- TESLA IMAGE -->
-        <img src="/static/tesla.png" class="tesla-img">
+  <div class="checkout-container">
+    <!-- Header -->
+    <h1>$TSLA Top Shareholders</h1>
 
-        <!-- TITLE -->
-        <div class="title">$TSLA Top Shareholders</div>
+    <!-- Subheader -->
+    <p class="subheader">
+      Secure your spot to connect with Tesla's top holders and enjoy exclusive benefits for the Tesla Christmas season.
+    </p>
 
-        <!-- SUBTITLE -->
-        <div class="subtitle">
-            Secure your spot to connect with Tesla's top holders and enjoy 
-            exclusive benefits for the Tesla Christmas season.
-        </div>
+    <!-- Image -->
+    <img src="static/your-image.png" alt="Tesla card">
 
-        <!-- SECURE BADGE -->
-        <div class="badge">Secure Checkout</div>
+    <!-- Price -->
+    <div class="price">$0.00</div>
 
-        <!-- PRICE -->
-        <div class="price-box">$0.00</div>
+    <!-- Stripe Card Form -->
+    <form id="payment-form">
+      <div id="card-element"></div>
 
-        <!-- REAL APPLE PAY / GOOGLE PAY BUTTON -->
-        <div id="payment-request-button"></div>
+      <!-- Apple Pay / Google Pay buttons -->
+      <div id="wallet-button"></div>
 
-        <!-- CARD FORM -->
-        <form id="payment-form">
-            <div id="payment-element"></div>
-            <button id="submit">JOIN</button>
-        </form>
+      <!-- Join Button -->
+      <button type="submit" id="submit-button">JOIN</button>
+    </form>
+  </div>
 
-    </div>
+  <!-- Stripe JS -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <script>
+    // Initialize Stripe
+    const stripe = Stripe("pk_live_XXXXXXXXXXXXXXXXXXXX"); // Replace with your actual publishable key
+    const elements = stripe.elements();
 
-    <script>
-        const stripe = Stripe("pk_live_51SUYa2L1rAu5PUSZ73EacQ8pW2GSqrZqCcV7cCPhAZonXosw4HMqYe5cgv0W20i1Tt338r7Wfq3wdLzrLozOWvA600wc5RkdNL");
+    // Card element
+    const card = elements.create("card", { hidePostalCode: true });
+    card.mount("#card-element");
 
-        initialize();
+    // Form submission
+    const form = document.getElementById("payment-form");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
 
-        async function initialize() {
+      // Replace with your server endpoint
+      const { paymentIntent, error } = await fetch("/create-payment-intent", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: 0 })
+      }).then(r => r.json());
 
-            // Create session on backend
-            const { clientSecret } = await fetch("/create-checkout-session", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" }
-            }).then(r => r.json());
+      if (error) {
+        alert(error.message);
+      } else {
+        const result = await stripe.confirmCardPayment(paymentIntent.client_secret, {
+          payment_method: { card: card }
+        });
 
-            const elements = stripe.elements({ clientSecret });
-
-            // REAL Apple Pay / Google Pay
-            const paymentRequest = stripe.paymentRequest({
-                country: "US",
-                currency: "usd",
-                total: {
-                    label: "Tesla Shareholder Access",
-                    amount: 0  // $0.00
-                },
-                requestPayerName: true,
-                requestPayerEmail: true
-            });
-
-            const prButton = elements.create("paymentRequestButton", {
-                paymentRequest
-            });
-
-            const result = await paymentRequest.canMakePayment();
-
-            if (result) {
-                document.getElementById("payment-request-button").style.display = "block";
-                prButton.mount("#payment-request-button");
-            } else {
-                document.getElementById("payment-request-button").style.display = "none";
-            }
-
-            // Card Element (full card form)
-            const paymentElement = elements.create("payment", {
-                layout: "tabs"
-            });
-            paymentElement.mount("#payment-element");
-
-            // Form handler
-            document
-                .getElementById("payment-form")
-                .addEventListener("submit", async (e) => {
-                    e.preventDefault();
-
-                    const { error } = await stripe.confirmPayment({
-                        elements,
-                        confirmParams: {
-                            return_url: window.location.origin + "/success.html"
-                        }
-                    });
-
-                    if (error) {
-                        alert(error.message);
-                    }
-                });
+        if (result.error) {
+          alert(result.error.message);
+        } else {
+          window.location.href = "/success";
         }
-    </script>
+      }
+    });
+
+    // Wallet button (Apple Pay / Google Pay)
+    const walletButton = document.getElementById("wallet-button");
+    if (stripe.paymentRequest) {
+      const paymentRequest = stripe.paymentRequest({
+        country: 'US',
+        currency: 'usd',
+        total: { label: 'Total', amount: 0 },
+        requestPayerName: true,
+        requestPayerEmail: true,
+      });
+
+      const prButton = elements.create('paymentRequestButton', { paymentRequest });
+      paymentRequest.canMakePayment().then(function(result) {
+        if (result) {
+          prButton.mount('#wallet-button');
+        } else {
+          walletButton.style.display = 'none';
+        }
+      });
+
+      paymentRequest.on('paymentmethod', async (ev) => {
+        // Handle wallet payments on your server
+        const { error } = await fetch('/wallet-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ paymentMethodId: ev.paymentMethod.id })
+        }).then(r => r.json());
+
+        if (error) {
+          ev.complete('fail');
+          alert(error.message);
+        } else {
+          ev.complete('success');
+          window.location.href = "/success";
+        }
+      });
+    }
+  </script>
+
 </body>
 </html>

